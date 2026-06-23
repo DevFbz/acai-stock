@@ -137,8 +137,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-# AI / LLM
-OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+# AI - Motor interno, sem API externa (OpenAI/Claude nao necessarios)
 
 # Email
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
