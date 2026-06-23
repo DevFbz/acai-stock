@@ -5,6 +5,7 @@ from django.http import HttpResponse
 
 from inventory.models import Product, StockMovement
 from ai_engine.graph import generate_ai_report, chat_with_ai
+from ai_engine.knowledge_base import KnowledgeBase
 from reports.models import Report
 from ai_engine.tasks import generate_scheduled_report
 
@@ -13,38 +14,14 @@ REPORT_TYPES = [
     ("sales_forecast", "Previsao de Demanda"),
     ("supplier_performance", "Desempenho de Fornecedores"),
     ("expiry_alert", "Alerta de Vencimento"),
+    ("financial", "Relatorio Financeiro"),
 ]
-
-
-def _gather_tenant_data(tenant):
-    products = Product.objects.filter(tenant=tenant, is_active=True)
-    stock_data = [
-        {
-            "name": p.name, "current": float(p.current_stock),
-            "min": float(p.min_stock), "unit": p.unit,
-            "expiry": p.expiry_date.isoformat() if p.expiry_date else None,
-            "low": p.is_low_stock, "expired": p.is_expired,
-            "days_to_expiry": p.days_to_expiry,
-            "cost": float(p.cost_price), "sale": float(p.sale_price),
-            "supplier": p.supplier.name if p.supplier else None,
-            "category": p.category.name if p.category else None,
-        }
-        for p in products
-    ]
-    movements = list(
-        StockMovement.objects.filter(product__tenant=tenant)[:50].values(
-            "product__name", "movement_type", "quantity", "reason", "created_at"
-        )
-    )
-    return stock_data, movements
 
 
 @login_required
 def ai_dashboard(request):
     tenant = request.user.tenant
-    reports = Report.objects.filter(tenant=tenant, report_type__startswith="ai").union(
-        Report.objects.filter(tenant=tenant, report_type__in=["sales_forecast", "supplier_performance", "expiry_alert"])
-    ) if hasattr(Report.objects, "union") else Report.objects.filter(tenant=tenant)
+    reports = Report.objects.filter(tenant=tenant)
     return render(request, "ai_engine/dashboard.html", {
         "reports": reports, "report_types": REPORT_TYPES,
     })
@@ -55,8 +32,7 @@ def ai_dashboard(request):
 def generate_report(request):
     tenant = request.user.tenant
     report_type = request.POST.get("report_type", "ai_custom")
-    stock_data, movements = _gather_tenant_data(tenant)
-    content = generate_ai_report(tenant.name, stock_data, movements, report_type)
+    content = generate_ai_report(tenant, report_type)
     report = Report.objects.create(
         tenant=tenant,
         title=f"{dict(REPORT_TYPES).get(report_type, report_type)} - {tenant.name}",
@@ -64,6 +40,7 @@ def generate_report(request):
         content=content,
         summary=content[:300],
         generated_by="ai_engine",
+        metadata={"knowledge_base": True},
     )
     return redirect("ai_engine:report_detail", pk=report.pk)
 
@@ -82,7 +59,7 @@ def report_pdf(request, pk):
     from reportlab.lib.units import cm
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
     from reportlab.lib.colors import HexColor
-    import html
+    import re
 
     tenant = request.user.tenant
     report = get_object_or_404(Report, pk=pk, tenant=tenant)
@@ -94,10 +71,14 @@ def report_pdf(request, pk):
     body_style = ParagraphStyle("CustomBody", parent=styles["Normal"], fontSize=11, leading=16)
 
     story = []
-    story.append(Paragraph(html.escape(report.title), title_style))
+    story.append(Paragraph(report.title, title_style))
     story.append(Spacer(1, 20))
     for line in report.content.split("\n"):
-        clean = html.escape(line).replace("**", "<b>").replace("*", "<b>")
+        clean = line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        clean = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", clean)
+        clean = re.sub(r"^### (.+)", r"<b>\1</b>", clean)
+        clean = re.sub(r"^## (.+)", r"<b>\1</b>", clean)
+        clean = re.sub(r"^# (.+)", r"<b>\1</b>", clean)
         if clean.strip():
             story.append(Paragraph(clean, body_style))
         else:
@@ -124,9 +105,7 @@ def chat_view(request):
     if request.method == "POST":
         query = request.POST.get("query", "").strip()
         if query:
-            stock_data, movements = _gather_tenant_data(tenant)
-            context = {"stock": stock_data[:30], "movements": movements[:20]}
-            answer = chat_with_ai(tenant.name, context, query)
+            answer = chat_with_ai(tenant, query)
             conversation.append({"role": "user", "text": query})
             conversation.append({"role": "ai", "text": answer})
             request.session["chat_history"] = conversation[-20:]
@@ -139,3 +118,14 @@ def chat_view(request):
 def chat_clear(request):
     request.session.pop("chat_history", None)
     return redirect("ai_engine:chat")
+
+
+@login_required
+def knowledge_view(request):
+    tenant = request.user.tenant
+    kb = KnowledgeBase(tenant)
+    return render(request, "ai_engine/knowledge.html", {
+        "knowledge_text": kb.to_text(),
+        "knowledge_json": kb.to_json(),
+        "compiled_at": kb.compiled_at,
+    })

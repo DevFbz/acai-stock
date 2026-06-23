@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
+    "drf_spectacular",
     "widget_tweaks",
     "django_celery_beat",
     "django_celery_results",
@@ -38,6 +39,8 @@ INSTALLED_APPS = [
     "subscriptions.apps.SubscriptionsConfig",
     "reports.apps.ReportsConfig",
     "ai_engine.apps.AiEngineConfig",
+    "api.apps.ApiConfig",
+    "billing.apps.BillingConfig",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +107,20 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "100/min",
+    },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Acai Stock API",
+    "DESCRIPTION": "Sistema de gestao de estoque para acaiterias",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 from datetime import timedelta  # noqa: E402
@@ -122,6 +139,15 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # AI / LLM
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+
+# Email
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="suporte@acaistock.com")
 
 # Login
 LOGIN_URL = "accounts:login"

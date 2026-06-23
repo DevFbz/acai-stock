@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Cobranca - Acai Stock{% endblock %}
+{% block page_title %}Painel de Cobranca{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+    <h3 style="margin-bottom: 8px; font-size: 18px;">📧 Sistema de Cobranca por E-mail</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+        Verifica assinaturas em atraso e envia e-mails automaticos pedindo para entrar em contato.
+        Apos 7 dias de atraso, o acesso do tenant e bloqueado automaticamente.
+    </p>
+    <div style="display: flex; gap: 10px;">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="run_check" class="btn btn-primary">Verificar e Enviar Agora</button>
+        </form>
+        <a href="{% url 'billing:send_async' %}" class="btn btn-secondary">Enviar via Celery (Async)</a>
+    </div>
+</div>
+
+<h3 style="margin-bottom: 16px; font-size: 16px;">Alertas de Cobranca Recentes</h3>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Tenant</th><th>Assunto</th><th>Status</th><th>Dias Atraso</th><th>Valor</th><th>Enviado em</th></tr>
+        </thead>
+        <tbody>
+            {% for a in alerts %}
+            <tr>
+                <td>{{ a.tenant.name }}</td>
+                <td style="max-width: 300px; font-size: 13px;">{{ a.subject }}</td>
+                <td>{% if a.status == 'sent' %}<span class="badge badge-success">Enviado</span>
+                    {% elif a.status == 'pending' %}<span class="badge badge-warning">Pendente</span>
+                    {% elif a.status == 'resolved' %}<span class="badge badge-info">Resolvido</span>
+                    {% else %}<span class="badge badge-danger">Escalado</span>{% endif %}</td>
+                <td>{{ a.days_overdue }}</td>
+                <td>R$ {{ a.amount_due|stringformat:".2f" }}</td>
+                <td>{{ a.sent_at|date:"d/m/Y H:i"|default:'-' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">📧</div><p>Nenhum alerta de cobranca enviado.</p></div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

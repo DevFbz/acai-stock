@@ -12,4 +12,5 @@ urlpatterns = [
     path("report/<int:pk>/pdf/", views.report_pdf, name="report_pdf"),
     path("chat/", views.chat_view, name="chat"),
     path("chat/clear/", views.chat_clear, name="chat_clear"),
+    path("knowledge/", views.knowledge_view, name="knowledge"),
 ]

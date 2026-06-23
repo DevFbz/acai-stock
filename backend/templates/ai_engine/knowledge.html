@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Base de Conhecimento - Acai Stock{% endblock %}
+{% block page_title %}Base de Conhecimento da IA{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 20px;">
+    <h3 style="margin-bottom: 8px; font-size: 18px;">🧠 O que a IA sabe sobre seu estoque</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;">
+        A IA tem acesso a TODOS os dados do seu sistema compilados em tempo real.
+        Compilado em: <strong>{{ compiled_at|date:"d/m/Y H:i:s" }}</strong>
+    </p>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'ai_engine:dashboard' %}" class="btn btn-primary">Gerar Relatorio</a>
+        <a href="{% url 'ai_engine:chat' %}" class="btn btn-secondary">Chat com IA</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 16px; font-size: 16px;">Dados Compilados</h3>
+    <div class="report-content" style="font-size: 13px; max-height: 600px; overflow-y: auto;">{{ knowledge_text }}</div>
+</div>
+{% endblock %}

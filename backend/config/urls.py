@@ -19,4 +19,6 @@ urlpatterns = [
     path("estoque/", include("inventory.urls")),
     path("relatorios/", include("reports.urls")),
     path("ia/", include("ai_engine.urls")),
+    path("cobranca/", include("billing.urls")),
+    path("api/v1/", include("api.urls", namespace="api")),
 ]
