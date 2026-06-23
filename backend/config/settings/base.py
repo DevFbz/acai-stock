@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 import environ
@@ -9,7 +10,17 @@ env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, []),
 )
-environ.Env.read_env(os.path.join(BASE_DIR, "backend", ".env"))
+
+# Tentar varios caminhos para o .env (dev, prod, portable/exe)
+_env_candidates = [
+    os.path.join(BASE_DIR, "backend", ".env"),
+    os.path.join(BASE_DIR, ".env"),
+    os.path.join(os.path.dirname(sys.executable), ".env") if getattr(sys, "frozen", False) else None,
+]
+for _env_path in _env_candidates:
+    if _env_path and os.path.exists(_env_path):
+        environ.Env.read_env(_env_path)
+        break
 
 SECRET_KEY = env("SECRET_KEY", default="dev-insecure-key")
 DEBUG = env("DEBUG")

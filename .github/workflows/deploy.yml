@@ -1,0 +1,85 @@
+name: CD - Deploy Automatico no Azure
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "prd.md"
+      - ".gitignore"
+      - "build.bat"
+      - "acai_stock.spec"
+
+env:
+  AZURE_WEBAPP_NAME: acai-stock
+  AZURE_RESOURCE_GROUP: rg-acai-stock
+  REGISTRY_NAME: acaistockregistry
+  REGISTRY_URL: acaistockregistry.azurecr.io
+  IMAGE_NAME: acai-stock
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Login no Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build e push da imagem Docker
+        run: |
+          docker build -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest ./backend
+          docker tag ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Login no Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configurar container no App Service
+        run: |
+          az webapp config container set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --docker-custom-image-name ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:latest \
+            --docker-registry-server-url https://${{ env.REGISTRY_URL }} \
+            --docker-registry-server-user ${{ secrets.REGISTRY_USERNAME }} \
+            --docker-registry-server-password ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Aplicar variaveis de ambiente
+        run: |
+          az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --settings \
+              DJANGO_SETTINGS_MODULE=config.settings.production \
+              SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" \
+              DEBUG=False \
+              ALLOWED_HOSTS="${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net" \
+              CELERY_BROKER_URL="${{ secrets.CELERY_BROKER_URL }}" \
+              CELERY_RESULT_BACKEND="${{ secrets.CELERY_RESULT_BACKEND }}" \
+              AZURE_SQL_SERVER="${{ secrets.AZURE_SQL_SERVER }}" \
+              AZURE_SQL_DATABASE="${{ secrets.AZURE_SQL_DATABASE }}" \
+              AZURE_SQL_USER="${{ secrets.AZURE_SQL_USER }}" \
+              AZURE_SQL_PASSWORD="${{ secrets.AZURE_SQL_PASSWORD }}" \
+              EMAIL_HOST="${{ secrets.EMAIL_HOST }}" \
+              EMAIL_PORT=587 \
+              EMAIL_HOST_USER="${{ secrets.EMAIL_HOST_USER }}" \
+              EMAIL_HOST_PASSWORD="${{ secrets.EMAIL_HOST_PASSWORD }}" \
+              DEFAULT_FROM_EMAIL="${{ secrets.DEFAULT_FROM_EMAIL }}" \
+              EMAIL_USE_TLS=True
+
+      - name: Forcar restart do App Service
+        run: |
+          az webapp restart --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+
+      - name: Verificar deploy
+        run: |
+          curl -s -o /dev/null -w "Status: %{http_code}\n" https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/
