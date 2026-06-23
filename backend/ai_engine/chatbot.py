@@ -206,7 +206,7 @@ class ChatBot:
         linhas = [
             f"📦 {produto.name}:\n",
             f"• Estoque atual: {produto.current_stock} {produto.get_unit_display()}",
-            f"• Estoque minimo: {produto.minimo}",
+            f"• Estoque minimo: {produto.min_stock}",
             f"• Preco custo: R$ {produto.cost_price:.2f} | Venda: R$ {produto.sale_price:.2f}",
             f"• Consumo medio (7 dias): {consumo_medio:.1f}/dia",
             f"• Consumo total (30 dias): {total_30d:.1f}",

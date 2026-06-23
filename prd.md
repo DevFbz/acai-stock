@@ -1,4 +1,4 @@
-# PRD - Açaí Stock: Sistema de Gestão de Estoque para Açaiteria
+w# PRD - Açaí Stock: Sistema de Gestão de Estoque para Açaiteria
 
 ## 1. Visão Geral
 

@@ -10,6 +10,10 @@
         <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
     </div>
     <div class="topbar-right">
+        <a href="{% url 'notifications:list' %}" class="theme-toggle" title="Notificacoes" style="position: relative; text-decoration: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span id="notif-badge" style="display:none; position: absolute; top: -4px; right: -4px; background: var(--danger); color: white; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; padding: 0 4px;"></span>
+        </a>
         <form method="post" action="{% url 'accounts:toggle_theme' %}" class="theme-toggle-form">
             {% csrf_token %}
             <button type="submit" class="theme-toggle" title="Alternar tema">

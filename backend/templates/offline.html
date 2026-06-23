@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Acai Stock</title>
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body class="blocked-body">
+    <div class="blocked-card">
+        <div class="blocked-icon">📡</div>
+        <h1 class="blocked-title">Voce esta offline</h1>
+        <p class="blocked-text">
+            Sem conexao com a internet. Algumas funcionalidades estao disponiveis em cache.
+        </p>
+        <p class="blocked-text">
+            Verifique sua conexao e tente novamente.
+        </p>
+        <a href="/" class="btn btn-primary btn-full">Tentar Novamente</a>
+    </div>
+</body>
+</html>

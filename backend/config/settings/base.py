@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "ai_engine.apps.AiEngineConfig",
     "api.apps.ApiConfig",
     "billing.apps.BillingConfig",
+    "notifications.apps.NotificationsConfig",
 ]
 
 MIDDLEWARE = [
@@ -68,7 +69,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "accounts.context_processors.theme_context",
+                "accounts.models.theme_context",
             ],
         },
     },
@@ -150,7 +151,7 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="suporte@acaistock.com")
 
 # Login
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "dashboard"
+LOGIN_REDIRECT_URL = "inventory:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
 # Theme default

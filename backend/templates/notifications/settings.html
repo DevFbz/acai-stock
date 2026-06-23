@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Configuracoes de Notificacoes - Acai Stock{% endblock %}
+{% block page_title %}Configuracoes de Notificacoes{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="email_enabled" {% if settings.email_enabled %}checked{% endif %} style="width: 18px; height: 18px;">
+                <span>Receber notificacoes por e-mail</span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="low_stock_alerts" {% if settings.low_stock_alerts %}checked{% endif %} style="width: 18px; height: 18px;">
+                <span>Alertas de estoque baixo</span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="expiry_alerts" {% if settings.expiry_alerts %}checked{% endif %} style="width: 18px; height: 18px;">
+                <span>Alertas de vencimento</span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="daily_summary" {% if settings.daily_summary %}checked{% endif %} style="width: 18px; height: 18px;">
+                <span>Resumo diario por e-mail</span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" name="weekly_report" {% if settings.weekly_report %}checked{% endif %} style="width: 18px; height: 18px;">
+                <span>Relatorio semanal por e-mail</span>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Salvar Configuracoes</button>
+    </form>
+</div>
+{% endblock %}

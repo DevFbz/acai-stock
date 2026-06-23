@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Notificacoes - Acai Stock{% endblock %}
+{% block page_title %}Notificacoes{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <span style="color: var(--text-muted); font-size: 14px;">{{ unread_count }} nao lida(s)</span>
+    <form method="post" action="{% url 'notifications:mark_all_read' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">Marcar todas como lidas</button>
+    </form>
+</div>
+
+<div class="card">
+    {% if notifications %}
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        {% for n in notifications %}
+        <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius-md);
+            background: {% if n.is_read %}var(--bg-tertiary){% else %}var(--accent-light){% endif %};
+            border-left: 3px solid var(--{% if n.severity == 'danger' %}danger{% elif n.severity == 'warning' %}warning{% elif n.severity == 'success' %}success{% else %}info{% endif %});">
+            <div style="font-size: 20px;">
+                {% if n.severity == 'danger' %}🔴{% elif n.severity == 'warning' %}🟡{% elif n.severity == 'success' %}🟢{% else %}🔵{% endif %}
+            </div>
+            <div style="flex: 1;">
+                <div style="font-weight: {% if not n.is_read %}700{% else %}400{% endif %};">{{ n.title }}</div>
+                <div style="color: var(--text-secondary); font-size: 13px; margin-top: 2px;">{{ n.message }}</div>
+                <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">{{ n.created_at|date:"d/m/Y H:i" }}</div>
+            </div>
+            {% if not n.is_read %}
+            <form method="post" action="{% url 'notifications:mark_read' n.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Ler</button>
+            </form>
+            {% endif %}
+            {% if n.url %}
+            <a href="{{ n.url }}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Ver</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-state-icon">🔔</div><p>Nenhuma notificacao.</p></div>
+    {% endif %}
+</div>
+{% endblock %}
