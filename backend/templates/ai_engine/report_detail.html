@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ report.title }} - Acai Stock{% endblock %}
+{% block page_title %}{{ report.title }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <a href="{% url 'ai_engine:report_pdf' report.pk %}" class="btn btn-primary">📄 Baixar PDF</a>
+    <a href="{% url 'ai_engine:dashboard' %}" class="btn btn-secondary">Voltar</a>
+</div>
+<div class="card">
+    <div style="margin-bottom: 16px; color: var(--text-muted); font-size: 13px;">
+        Gerado por {{ report.generated_by }} em {{ report.created_at|date:"d/m/Y H:i" }}
+    </div>
+    <div class="report-content">{{ report.content|linebreaks }}</div>
+</div>
+{% endblock %}

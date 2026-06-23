@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Chat com IA - Acai Stock{% endblock %}
+{% block page_title %}Chat com IA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 18px;">💬 Chat com IA</h3>
+        <a href="{% url 'ai_engine:chat_clear' %}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Limpar</a>
+    </div>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+        Faca perguntas sobre seu estoque. A IA tem acesso aos seus dados em tempo real.
+    </p>
+
+    <div id="chat-messages" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+        {% if conversation %}
+            {% for msg in conversation %}
+            <div style="margin-bottom: 12px; text-align: {% if msg.role == 'user' %}right{% else %}left{% endif %};">
+                <div style="display: inline-block; max-width: 80%; padding: 10px 14px; border-radius: var(--radius-md);
+                    background: {% if msg.role == 'user' %}var(--accent){% else %}var(--bg-secondary){% endif %};
+                    color: {% if msg.role == 'user' %}var(--accent-text){% else %}var(--text-primary){% endif %};
+                    text-align: left; white-space: pre-wrap;">{{ msg.text }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state"><div class="empty-state-icon">💬</div><p>Faca sua primeira pergunta!</p></div>
+        {% endif %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="query" class="form-input" placeholder="Ex: Quais produtos estao com estoque baixo?" required>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+var chatDiv = document.getElementById('chat-messages');
+chatDiv.scrollTop = chatDiv.scrollHeight;
+</script>
+{% endblock %}

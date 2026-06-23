@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Relatorio em Geracao - Acai Stock{% endblock %}
+{% block page_title %}Relatorio em Geracao{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; text-align: center;">
+    <div class="empty-state-icon" style="font-size: 48px;">⏳</div>
+    <h3 style="margin-bottom: 8px;">Relatorio enviado para processamento</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 8px;">
+        Tipo: <strong>{{ report_type }}</strong>
+    </p>
+    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">
+        Task ID: {{ task_id }}
+    </p>
+    <p style="color: var(--text-secondary); margin-bottom: 24px;">
+        O relatorio esta sendo gerado em segundo plano via Celery.
+        Acesse a lista de relatorios em alguns instantes para ver o resultado.
+    </p>
+    <a href="{% url 'ai_engine:dashboard' %}" class="btn btn-primary">Ver Relatorios</a>
+</div>
+{% endblock %}
