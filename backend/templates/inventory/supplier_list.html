@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Fornecedores - Açaí Stock{% endblock %}
+{% block page_title %}Fornecedores{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+    <a href="/admin/inventory/supplier/add/" class="btn btn-primary">+ Novo Fornecedor</a>
+</div>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Nome</th><th>Contato</th><th>Telefone</th><th>E-mail</th><th>CNPJ</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            {% for s in suppliers %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ s.contact_person|default:'-' }}</td>
+                <td>{{ s.phone|default:'-' }}</td>
+                <td>{{ s.email|default:'-' }}</td>
+                <td>{{ s.cnpj|default:'-' }}</td>
+                <td>{% if s.is_active %}<span class="badge badge-success">Ativo</span>{% else %}<span class="badge badge-muted">Inativo</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">
+                <div class="empty-state"><div class="empty-state-icon">🚚</div><p>Nenhum fornecedor cadastrado.</p></div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

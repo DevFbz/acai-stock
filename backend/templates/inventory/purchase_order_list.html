@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Pedidos de Compra - Açaí Stock{% endblock %}
+{% block page_title %}Pedidos de Compra{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+    <a href="/admin/inventory/purchaseorder/add/" class="btn btn-primary">+ Novo Pedido</a>
+</div>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Nº</th><th>Fornecedor</th><th>Status</th><th>Total</th><th>Previsto</th><th>Criado em</th></tr>
+        </thead>
+        <tbody>
+            {% for o in orders %}
+            <tr>
+                <td>PO-{{ o.id|stringformat:"06d" }}</td>
+                <td>{{ o.supplier|default:'-' }}</td>
+                <td>
+                    {% if o.status == 'draft' %}<span class="badge badge-muted">Rascunho</span>
+                    {% elif o.status == 'sent' %}<span class="badge badge-info">Enviado</span>
+                    {% elif o.status == 'received' %}<span class="badge badge-success">Recebido</span>
+                    {% else %}<span class="badge badge-danger">Cancelado</span>{% endif %}
+                </td>
+                <td>R$ {{ o.total|stringformat:".2f" }}</td>
+                <td>{{ o.expected_date|date:"d/m/Y"|default:'-' }}</td>
+                <td>{{ o.created_at|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">
+                <div class="empty-state"><div class="empty-state-icon">🛒</div><p>Nenhum pedido de compra.</p></div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

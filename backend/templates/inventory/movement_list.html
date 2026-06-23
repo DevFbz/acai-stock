@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Movimentações - Açaí Stock{% endblock %}
+{% block page_title %}Movimentações de Estoque{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Motivo</th><th>Data</th></tr>
+        </thead>
+        <tbody>
+            {% for m in movements %}
+            <tr>
+                <td>{{ m.product.name }}</td>
+                <td>
+                    {% if m.movement_type == 'in' %}<span class="badge badge-success">Entrada</span>
+                    {% elif m.movement_type == 'out' %}<span class="badge badge-info">Saída</span>
+                    {% elif m.movement_type == 'waste' %}<span class="badge badge-danger">Perda</span>
+                    {% else %}<span class="badge badge-muted">Ajuste</span>{% endif %}
+                </td>
+                <td>{{ m.quantity }}</td>
+                <td>{{ m.reason|default:'-' }}</td>
+                <td>{{ m.created_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">
+                <div class="empty-state"><div class="empty-state-icon">📋</div><p>Nenhuma movimentação registrada.</p></div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

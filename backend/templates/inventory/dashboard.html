@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Açaí Stock{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--accent-light); color: var(--accent);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        </div>
+        <div class="stat-label">Produtos Ativos</div>
+        <div class="stat-value">{{ products_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="stat-label">Estoque Baixo</div>
+        <div class="stat-value">{{ low_stock|length }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="stat-label">Vencidos</div>
+        <div class="stat-value">{{ expired|length }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--info-bg); color: var(--info);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M21 3l-7 7M8 21H3v-5M3 21l7-7"/></svg>
+        </div>
+        <div class="stat-label">Fornecedores</div>
+        <div class="stat-value">{{ suppliers_count }}</div>
+    </div>
+</div>
+
+{% if low_stock %}
+<div class="card" style="margin-bottom: 20px;">
+    <h3 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">⚠️ Produtos com Estoque Baixo</h3>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr><th>Produto</th><th>Estoque Atual</th><th>Mínimo</th><th>Unidade</th></tr>
+            </thead>
+            <tbody>
+                {% for p in low_stock %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td><span class="badge badge-warning">{{ p.current_stock }}</span></td>
+                    <td>{{ p.min_stock }}</td>
+                    <td>{{ p.get_unit_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if expiring_soon %}
+<div class="card" style="margin-bottom: 20px;">
+    <h3 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">📅 Vencendo em até 7 dias</h3>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr><th>Produto</th><th>Validade</th><th>Dias Restantes</th></tr>
+            </thead>
+            <tbody>
+                {% for p in expiring_soon %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.expiry_date|date:"d/m/Y" }}</td>
+                    <td><span class="badge badge-warning">{{ p.days_to_expiry }} dias</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">📊 Movimentações Recentes</h3>
+    {% if recent_movements %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr><th>Produto</th><th>Tipo</th><th>Qtd</th><th>Data</th></tr>
+            </thead>
+            <tbody>
+                {% for m in recent_movements %}
+                <tr>
+                    <td>{{ m.product.name }}</td>
+                    <td>
+                        {% if m.movement_type == 'in' %}<span class="badge badge-success">Entrada</span>
+                        {% elif m.movement_type == 'out' %}<span class="badge badge-info">Saída</span>
+                        {% elif m.movement_type == 'waste' %}<span class="badge badge-danger">Perda</span>
+                        {% else %}<span class="badge badge-muted">Ajuste</span>{% endif %}
+                    </td>
+                    <td>{{ m.quantity }}</td>
+                    <td>{{ m.created_at|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <p>Nenhuma movimentação registrada.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

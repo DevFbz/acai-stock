@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Relatórios - Açaí Stock{% endblock %}
+{% block page_title %}Relatórios{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+    <form method="post" action="{% url 'ai_engine:generate_report' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">🤖 Gerar Relatório IA</button>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Título</th><th>Tipo</th><th>Gerado por</th><th>Data</th><th>Ações</th></tr>
+        </thead>
+        <tbody>
+            {% for r in reports %}
+            <tr>
+                <td>{{ r.title }}</td>
+                <td><span class="badge badge-info">{{ r.get_report_type_display }}</span></td>
+                <td>{{ r.generated_by }}</td>
+                <td>{{ r.created_at|date:"d/m/Y H:i" }}</td>
+                <td><a href="#" class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;">Ver</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">
+                <div class="empty-state"><div class="empty-state-icon">📄</div><p>Nenhum relatório gerado ainda.</p></div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

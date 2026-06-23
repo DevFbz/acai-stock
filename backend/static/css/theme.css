@@ -1,0 +1,93 @@
+/* ===========================
+   THEME VARIABLES - Light/Dark
+   =========================== */
+
+:root,
+[data-theme="light"] {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --bg-hover: #e2e8f0;
+    --bg-active: #ede9fe;
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --text-inverse: #ffffff;
+
+    --border-color: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    --accent: #7c3aed;
+    --accent-hover: #6d28d9;
+    --accent-light: #ede9fe;
+    --accent-text: #ffffff;
+
+    --success: #16a34a;
+    --success-bg: #dcfce7;
+    --warning: #d97706;
+    --warning-bg: #fef3c7;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --info: #0284c7;
+    --info-bg: #e0f2fe;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+    --sidebar-bg: #1e1b2e;
+    --sidebar-text: #c4b5fd;
+    --sidebar-text-active: #ffffff;
+    --sidebar-item-hover: rgba(124, 58, 237, 0.15);
+    --sidebar-item-active: rgba(124, 58, 237, 0.25);
+    --sidebar-divider: rgba(255, 255, 255, 0.08);
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+
+    --sidebar-width: 260px;
+    --topbar-height: 60px;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0f0a1e;
+    --bg-secondary: #1a1530;
+    --bg-tertiary: #241d3d;
+    --bg-hover: #2d2450;
+    --bg-active: #3d2f5e;
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --text-inverse: #0f172a;
+
+    --border-color: #2d2450;
+    --border-strong: #3d2f5e;
+
+    --accent: #a78bfa;
+    --accent-hover: #c4b5fd;
+    --accent-light: #2d2450;
+    --accent-text: #0f0a1e;
+
+    --success: #4ade80;
+    --success-bg: #052e16;
+    --warning: #fbbf24;
+    --warning-bg: #422006;
+    --danger: #f87171;
+    --danger-bg: #450a0a;
+    --info: #38bdf8;
+    --info-bg: #082f49;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+
+    --sidebar-bg: #0a0617;
+    --sidebar-text: #94a3b8;
+    --sidebar-text-active: #c4b5fd;
+    --sidebar-item-hover: rgba(167, 139, 250, 0.1);
+    --sidebar-item-active: rgba(167, 139, 250, 0.2);
+    --sidebar-divider: rgba(255, 255, 255, 0.06);
+}

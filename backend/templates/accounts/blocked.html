@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Bloqueado</title>
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body class="blocked-body">
+    <div class="blocked-card">
+        <div class="blocked-icon">🔒</div>
+        <h1 class="blocked-title">Acesso Bloqueado</h1>
+        <p class="blocked-text">
+            Seu acesso ao sistema foi bloqueado. Isso pode ter ocorrido por:
+        </p>
+        <ul style="text-align: left; color: var(--text-secondary); margin: 16px 0 24px 20px; font-size: 14px;">
+            <li>Falha no pagamento da mensalidade</li>
+            <li>Assinatura vencida</li>
+            <li>Suspensão administrativa</li>
+        </ul>
+        <p class="blocked-text">
+            Entre em contato com o suporte para regularizar:<br>
+            <strong>suporte@acaistock.com</strong>
+        </p>
+        <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-full">Voltar ao login</a>
+    </div>
+</body>
+</html>

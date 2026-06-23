@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Produtos - Açaí Stock{% endblock %}
+{% block page_title %}Produtos{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <form method="get" style="display: flex; gap: 8px;">
+        <input type="text" name="q" class="form-input" placeholder="Buscar produto..." value="{{ search|default:'' }}" style="width: 280px;">
+        <button type="submit" class="btn btn-secondary">Buscar</button>
+    </form>
+    <a href="/admin/inventory/product/add/" class="btn btn-primary">+ Novo Produto</a>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Nome</th><th>SKU</th><th>Categoria</th>
+                <th>Estoque</th><th>Mínimo</th><th>Validade</th><th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in products %}
+            <tr>
+                <td>{{ p.name }}</td>
+                <td>{{ p.sku|default:'-' }}</td>
+                <td>{{ p.category|default:'-' }}</td>
+                <td>{{ p.current_stock }} {{ p.get_unit_display }}</td>
+                <td>{{ p.min_stock }}</td>
+                <td>{{ p.expiry_date|date:"d/m/Y"|default:'-' }}</td>
+                <td>
+                    {% if p.is_expired %}<span class="badge badge-danger">Vencido</span>
+                    {% elif p.is_low_stock %}<span class="badge badge-warning">Estoque baixo</span>
+                    {% elif p.days_to_expiry and p.days_to_expiry <= 7 %}<span class="badge badge-warning">Vencendo</span>
+                    {% else %}<span class="badge badge-success">OK</span>{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <p>Nenhum produto cadastrado.</p>
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

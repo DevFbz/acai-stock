@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Inteligência IA - Açaí Stock{% endblock %}
+{% block page_title %}Inteligência Artificial{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+    <h3 style="margin-bottom: 8px; font-size: 18px; font-weight: 600;">🤖 Relatórios com IA</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+        Gere relatórios inteligentes de estoque usando LangChain + LangGraph.
+        A IA analisa seus dados e fornece insights e recomendações automáticas.
+    </p>
+    <form method="post" action="{% url 'ai_engine:generate_report' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">⚡ Gerar Novo Relatório</button>
+    </form>
+</div>
+
+<h3 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">Relatórios Gerados</h3>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Título</th><th>Resumo</th><th>Data</th></tr>
+        </thead>
+        <tbody>
+            {% for r in reports %}
+            <tr>
+                <td>{{ r.title }}</td>
+                <td style="max-width: 400px; color: var(--text-muted); font-size: 13px;">{{ r.summary|truncatewords:20 }}</td>
+                <td>{{ r.created_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">
+                <div class="empty-state"><div class="empty-state-icon">🤖</div><p>Nenhum relatório IA gerado ainda.</p></div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
