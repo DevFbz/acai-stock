@@ -3,26 +3,32 @@
 {% block page_title %}Produtos{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
     <form method="get" style="display: flex; gap: 8px;">
-        <input type="text" name="q" class="form-input" placeholder="Buscar produto..." value="{{ search|default:'' }}" style="width: 280px;">
-        <button type="submit" class="btn btn-secondary">Buscar</button>
+        <input type="text" name="q" class="form-input" placeholder="Buscar produto..." value="{{ search|default:'' }}" style="width: 240px;">
+        <select name="category" class="form-input" style="width: 180px;">
+            <option value="">Todas categorias</option>
+            {% for c in categories %}
+            <option value="{{ c.pk }}" {% if request.GET.category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-secondary">Filtrar</button>
     </form>
-    <a href="/admin/inventory/product/add/" class="btn btn-primary">+ Novo Produto</a>
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'inventory:export_products_csv' %}" class="btn btn-secondary">Exportar CSV</a>
+        <a href="{% url 'inventory:product_create' %}" class="btn btn-primary">+ Novo Produto</a>
+    </div>
 </div>
 
 <div class="table-container">
     <table class="data-table">
         <thead>
-            <tr>
-                <th>Nome</th><th>SKU</th><th>Categoria</th>
-                <th>Estoque</th><th>Mínimo</th><th>Validade</th><th>Status</th>
-            </tr>
+            <tr><th>Nome</th><th>SKU</th><th>Categoria</th><th>Estoque</th><th>Minimo</th><th>Validade</th><th>Status</th><th>Acoes</th></tr>
         </thead>
         <tbody>
             {% for p in products %}
             <tr>
-                <td>{{ p.name }}</td>
+                <td><a href="{% url 'inventory:product_detail' p.pk %}" style="color: var(--accent); text-decoration: none; font-weight: 600;">{{ p.name }}</a></td>
                 <td>{{ p.sku|default:'-' }}</td>
                 <td>{{ p.category|default:'-' }}</td>
                 <td>{{ p.current_stock }} {{ p.get_unit_display }}</td>
@@ -34,14 +40,10 @@
                     {% elif p.days_to_expiry and p.days_to_expiry <= 7 %}<span class="badge badge-warning">Vencendo</span>
                     {% else %}<span class="badge badge-success">OK</span>{% endif %}
                 </td>
+                <td><a href="{% url 'inventory:product_update' p.pk %}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Editar</a></td>
             </tr>
             {% empty %}
-            <tr><td colspan="7">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📦</div>
-                    <p>Nenhum produto cadastrado.</p>
-                </div>
-            </td></tr>
+            <tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">📦</div><p>Nenhum produto cadastrado.</p></div></td></tr>
             {% endfor %}
         </tbody>
     </table>

@@ -4,13 +4,11 @@
 
 {% block content %}
 <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-    <a href="/admin/inventory/supplier/add/" class="btn btn-primary">+ Novo Fornecedor</a>
+    <a href="{% url 'inventory:supplier_create' %}" class="btn btn-primary">+ Novo Fornecedor</a>
 </div>
 <div class="table-container">
     <table class="data-table">
-        <thead>
-            <tr><th>Nome</th><th>Contato</th><th>Telefone</th><th>E-mail</th><th>CNPJ</th><th>Status</th></tr>
-        </thead>
+        <thead><tr><th>Nome</th><th>Contato</th><th>Telefone</th><th>E-mail</th><th>CNPJ</th><th>Status</th><th>Acoes</th></tr></thead>
         <tbody>
             {% for s in suppliers %}
             <tr>
@@ -20,11 +18,10 @@
                 <td>{{ s.email|default:'-' }}</td>
                 <td>{{ s.cnpj|default:'-' }}</td>
                 <td>{% if s.is_active %}<span class="badge badge-success">Ativo</span>{% else %}<span class="badge badge-muted">Inativo</span>{% endif %}</td>
+                <td><a href="{% url 'inventory:supplier_update' s.pk %}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Editar</a></td>
             </tr>
             {% empty %}
-            <tr><td colspan="6">
-                <div class="empty-state"><div class="empty-state-icon">🚚</div><p>Nenhum fornecedor cadastrado.</p></div>
-            </td></tr>
+            <tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">🚚</div><p>Nenhum fornecedor cadastrado.</p></div></td></tr>
             {% endfor %}
         </tbody>
     </table>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Categorias - Açaí Stock{% endblock %}
+{% block page_title %}Categorias{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+    <a href="{% url 'inventory:category_create' %}" class="btn btn-primary">+ Nova Categoria</a>
+</div>
+<div class="table-container">
+    <table class="data-table">
+        <thead><tr><th>Nome</th><th>Descricao</th><th>Produtos</th><th>Acoes</th></tr></thead>
+        <tbody>
+            {% for c in categories %}
+            <tr>
+                <td>{{ c.name }}</td>
+                <td>{{ c.description|truncatewords:10|default:'-' }}</td>
+                <td>{{ c.products.count }}</td>
+                <td><a href="{% url 'inventory:category_update' c.pk %}" class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;">Editar</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4"><div class="empty-state"><div class="empty-state-icon">📁</div><p>Nenhuma categoria cadastrada.</p></div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

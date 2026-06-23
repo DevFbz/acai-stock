@@ -1,31 +1,38 @@
 {% extends "base.html" %}
-{% block title %}Movimentações - Açaí Stock{% endblock %}
-{% block page_title %}Movimentações de Estoque{% endblock %}
+{% block title %}Movimentacoes - Açaí Stock{% endblock %}
+{% block page_title %}Movimentacoes de Estoque{% endblock %}
 
 {% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <form method="get" style="display: flex; gap: 8px;">
+        <select name="type" class="form-input" style="width: 180px;">
+            <option value="">Todos os tipos</option>
+            <option value="in" {% if filter_type == 'in' %}selected{% endif %}>Entrada</option>
+            <option value="out" {% if filter_type == 'out' %}selected{% endif %}>Saida</option>
+            <option value="adjustment" {% if filter_type == 'adjustment' %}selected{% endif %}>Ajuste</option>
+            <option value="waste" {% if filter_type == 'waste' %}selected{% endif %}>Perda</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Filtrar</button>
+    </form>
+    <a href="{% url 'inventory:movement_create' %}" class="btn btn-primary">+ Nova Movimentacao</a>
+</div>
 <div class="table-container">
     <table class="data-table">
-        <thead>
-            <tr><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Motivo</th><th>Data</th></tr>
-        </thead>
+        <thead><tr><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Motivo</th><th>Data</th></tr></thead>
         <tbody>
             {% for m in movements %}
             <tr>
                 <td>{{ m.product.name }}</td>
-                <td>
-                    {% if m.movement_type == 'in' %}<span class="badge badge-success">Entrada</span>
-                    {% elif m.movement_type == 'out' %}<span class="badge badge-info">Saída</span>
+                <td>{% if m.movement_type == 'in' %}<span class="badge badge-success">Entrada</span>
+                    {% elif m.movement_type == 'out' %}<span class="badge badge-info">Saida</span>
                     {% elif m.movement_type == 'waste' %}<span class="badge badge-danger">Perda</span>
-                    {% else %}<span class="badge badge-muted">Ajuste</span>{% endif %}
-                </td>
+                    {% else %}<span class="badge badge-muted">Ajuste</span>{% endif %}</td>
                 <td>{{ m.quantity }}</td>
                 <td>{{ m.reason|default:'-' }}</td>
                 <td>{{ m.created_at|date:"d/m/Y H:i" }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="5">
-                <div class="empty-state"><div class="empty-state-icon">📋</div><p>Nenhuma movimentação registrada.</p></div>
-            </td></tr>
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">📋</div><p>Nenhuma movimentacao registrada.</p></div></td></tr>
             {% endfor %}
         </tbody>
     </table>

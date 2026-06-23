@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Pedido PO-{{ order.id|stringformat:"06d" }} - Açaí Stock{% endblock %}
+{% block page_title %}Pedido PO-{{ order.id|stringformat:"06d" }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 12px; margin-bottom: 20px;">
+    {% if order.status == 'draft' %}
+        <a href="{% url 'inventory:purchase_order_status' order.pk 'sent' %}" class="btn btn-primary">Marcar como Enviado</a>
+    {% endif %}
+    {% if order.status == 'sent' %}
+        <a href="{% url 'inventory:purchase_order_status' order.pk 'received' %}" class="btn btn-primary">Marcar como Recebido</a>
+        <a href="{% url 'inventory:purchase_order_status' order.pk 'canceled' %}" class="btn btn-danger">Cancelar Pedido</a>
+    {% endif %}
+    <a href="{% url 'inventory:purchase_order_list' %}" class="btn btn-secondary">Voltar</a>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label">Fornecedor</div>
+        <div class="stat-value" style="font-size: 18px;">{{ order.supplier|default:'-' }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Status</div>
+        <div class="stat-value" style="font-size: 18px;">
+            {% if order.status == 'draft' %}<span class="badge badge-muted">Rascunho</span>
+            {% elif order.status == 'sent' %}<span class="badge badge-info">Enviado</span>
+            {% elif order.status == 'received' %}<span class="badge badge-success">Recebido</span>
+            {% else %}<span class="badge badge-danger">Cancelado</span>{% endif %}
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total</div>
+        <div class="stat-value">R$ {{ order.total|stringformat:".2f" }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Previsao</div>
+        <div class="stat-value" style="font-size: 18px;">{{ order.expected_date|date:"d/m/Y"|default:'-' }}</div>
+    </div>
+</div>
+
+{% if order.status != 'received' and order.status != 'canceled' %}
+<div class="card" style="margin-bottom: 20px;">
+    <h3 style="margin-bottom: 16px; font-size: 16px;">Adicionar Item</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Produto</label>
+                {{ item_form.product }}
+            </div>
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Quantidade</label>
+                {{ item_form.quantity }}
+            </div>
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Custo Unit.</label>
+                {{ item_form.unit_cost }}
+            </div>
+            <button type="submit" name="add_item" class="btn btn-primary">+ Add</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3 style="margin-bottom: 16px; font-size: 16px;">Itens do Pedido</h3>
+    {% if items %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead><tr><th>Produto</th><th>Qtd</th><th>Custo Unit.</th><th>Subtotal</th></tr></thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>R$ {{ item.unit_cost|stringformat:".2f" }}</td>
+                    <td>R$ {{ item.subtotal|stringformat:".2f" }}</td>
+                </tr>
+                {% endfor %}
+                <tr style="font-weight: 700; background: var(--bg-tertiary);">
+                    <td colspan="3" style="text-align: right;">Total</td>
+                    <td>R$ {{ order.total|stringformat:".2f" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-state-icon">🛒</div><p>Nenhum item adicionado.</p></div>
+    {% endif %}
+    {% if order.notes %}
+    <div style="margin-top: 16px; padding: 12px; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+        <strong>Observacoes:</strong> {{ order.notes }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

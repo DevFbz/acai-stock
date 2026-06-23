@@ -32,6 +32,13 @@
         <div class="stat-label">Fornecedores</div>
         <div class="stat-value">{{ suppliers_count }}</div>
     </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="stat-label">Valor em Estoque</div>
+        <div class="stat-value">R$ {{ total_stock_value|stringformat:".2f" }}</div>
+    </div>
 </div>
 
 {% if low_stock %}
